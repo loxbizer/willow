@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Willow - Assistant Virtuel</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        #messages { border: 1px solid #ddd; padding: 10px; height: 300px; overflow-y: scroll; }
+        #input { width: 80%; }
+        button { width: 15%; }
+    </style>
+</head>
+<body>
+    <h1>Willow - Assistant Virtuel</h1>
+    <div id="messages"></div>
+    <input id="input" type="text" placeholder="Tape ton message..." />
+    <button onclick="sendMessage()">Envoyer</button>
+
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById("input");
+            const message = input.value.trim();
+            
+            if (message) {
+                // Afficher le message de l'utilisateur
+                let messages = document.getElementById("messages");
+                messages.innerHTML += `<div><b>Toi:</b> ${message}</div>`;
+                messages.scrollTop = messages.scrollHeight;
+                
+                // Envoyer le message à l'API backend (Node.js)
+                const response = await fetch("http://localhost:3000/generate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message })
+                });
+                
+                const data = await response.json();
+                // Afficher la réponse de l'assistant
+                messages.innerHTML += `<div><b>Willow:</b> ${data.response}</div>`;
+                messages.scrollTop = messages.scrollHeight;
+            }
+            
+            input.value = "";
+        }
+    </script>
+</body>
+</html>
